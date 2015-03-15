@@ -1316,7 +1316,7 @@ class MDB2_Result_mysqli extends MDB2_Result_Common
 
         if (!$row) {
             if ($this->result === false) {
-                $err =& $this->db->raiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
+                $err =& $this->db->customRaiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
                     'resultset has already been freed', __FUNCTION__);
                 return $err;
             }
@@ -1389,12 +1389,12 @@ class MDB2_Result_mysqli extends MDB2_Result_Common
         $cols = @mysqli_num_fields($this->result);
         if (is_null($cols)) {
             if ($this->result === false) {
-                return $this->db->raiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
+                return $this->db->customRaiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
                     'resultset has already been freed', __FUNCTION__);
             } elseif (is_null($this->result)) {
                 return count($this->types);
             }
-            return $this->db->raiseError(null, null, null,
+            return $this->db->customRaiseError(null, null, null,
                 'Could not get column count', __FUNCTION__);
         }
         return $cols;
@@ -1442,7 +1442,7 @@ class MDB2_Result_mysqli extends MDB2_Result_Common
         if (is_object($this->result) && $this->db->connection) {
             $free = @mysqli_free_result($this->result);
             if ($free === false) {
-                return $this->db->raiseError(null, null, null,
+                return $this->db->customRaiseError(null, null, null,
                     'Could not free result', __FUNCTION__);
             }
         }
@@ -1474,12 +1474,12 @@ class MDB2_BufferedResult_mysqli extends MDB2_Result_mysqli
     {
         if ($this->rownum != ($rownum - 1) && !@mysqli_data_seek($this->result, $rownum)) {
             if ($this->result === false) {
-                return $this->db->raiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
+                return $this->db->customRaiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
                     'resultset has already been freed', __FUNCTION__);
             } elseif (is_null($this->result)) {
                 return MDB2_OK;
             }
-            return $this->db->raiseError(MDB2_ERROR_INVALID, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR_INVALID, null, null,
                 'tried to seek to an invalid row number ('.$rownum.')', __FUNCTION__);
         }
         $this->rownum = $rownum - 1;
@@ -1518,12 +1518,12 @@ class MDB2_BufferedResult_mysqli extends MDB2_Result_mysqli
         $rows = @mysqli_num_rows($this->result);
         if (is_null($rows)) {
             if ($this->result === false) {
-                return $this->db->raiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
+                return $this->db->customRaiseError(MDB2_ERROR_NEED_MORE_DATA, null, null,
                     'resultset has already been freed', __FUNCTION__);
             } elseif (is_null($this->result)) {
                 return 0;
             }
-            return $this->db->raiseError(null, null, null,
+            return $this->db->customRaiseError(null, null, null,
                 'Could not get row count', __FUNCTION__);
         }
         return $rows;
@@ -1605,7 +1605,7 @@ class MDB2_Statement_mysqli extends MDB2_Statement_Common
             $i = 0;
             foreach ($this->positions as $parameter) {
                 if (!array_key_exists($parameter, $this->values)) {
-                    return $this->db->raiseError(MDB2_ERROR_NOT_FOUND, null, null,
+                    return $this->db->customRaiseError(MDB2_ERROR_NOT_FOUND, null, null,
                         'Unable to bind to missing placeholder: '.$parameter, __FUNCTION__);
                 }
                 $value = $this->values[$parameter];
@@ -1657,7 +1657,7 @@ class MDB2_Statement_mysqli extends MDB2_Statement_Common
             } else {
                 $result = @call_user_func_array('mysqli_stmt_bind_param', $parameters);
                 if ($result === false) {
-                    $err =& $this->db->raiseError(null, null, null,
+                    $err =& $this->db->customRaiseError(null, null, null,
                         'Unable to bind parameters', __FUNCTION__);
                     return $err;
                 }
@@ -1705,7 +1705,7 @@ class MDB2_Statement_mysqli extends MDB2_Statement_Common
                 $result_class, $result_wrap_class, $this->limit, $this->offset);
         } else {
             if (!@mysqli_stmt_execute($this->statement)) {
-                $err =& $this->db->raiseError(null, null, null,
+                $err =& $this->db->customRaiseError(null, null, null,
                     'Unable to execute statement', __FUNCTION__);
                 return $err;
             }
@@ -1739,14 +1739,14 @@ class MDB2_Statement_mysqli extends MDB2_Statement_Common
     function free()
     {
         if (is_null($this->positions)) {
-            return $this->db->raiseError(MDB2_ERROR, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR, null, null,
                 'Prepared statement has already been freed', __FUNCTION__);
         }
         $result = MDB2_OK;
 
         if (is_object($this->statement)) {
             if (!@mysqli_stmt_close($this->statement)) {
-                $result = $this->db->raiseError(null, null, null,
+                $result = $this->db->customRaiseError(null, null, null,
                     'Could not free statement', __FUNCTION__);
             }
         } elseif (!is_null($this->statement)) {

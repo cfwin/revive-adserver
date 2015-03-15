@@ -3480,7 +3480,7 @@ class MDB2_Result_Common extends MDB2_Result
     {
         $target_rownum = $rownum - 1;
         if ($this->rownum > $target_rownum) {
-            return $this->db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
                 'seeking to previous rows not implemented', __FUNCTION__);
         }
         while ($this->rownum < $target_rownum) {
@@ -3504,7 +3504,7 @@ class MDB2_Result_Common extends MDB2_Result
      */
     function fetchRow($fetchmode = MDB2_FETCHMODE_DEFAULT, $rownum = null)
     {
-        $err =& $this->db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+        $err =& $this->db->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
             'method not implemented', __FUNCTION__);
         return $err;
     }
@@ -3530,7 +3530,7 @@ class MDB2_Result_Common extends MDB2_Result
             return $row;
         }
         if (!array_key_exists($colnum, $row)) {
-            return $this->db->raiseError(MDB2_ERROR_TRUNCATED, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR_TRUNCATED, null, null,
                 'column is not defined in the result set: '.$colnum, __FUNCTION__);
         }
         return $row[$colnum];
@@ -3555,7 +3555,7 @@ class MDB2_Result_Common extends MDB2_Result
         $row = $this->fetchRow($fetchmode);
         if (is_array($row)) {
             if (!array_key_exists($colnum, $row)) {
-                return $this->db->raiseError(MDB2_ERROR_TRUNCATED, null, null,
+                return $this->db->customRaiseError(MDB2_ERROR_TRUNCATED, null, null,
                     'column is not defined in the result set: '.$colnum, __FUNCTION__);
             }
             do {
@@ -3613,7 +3613,7 @@ class MDB2_Result_Common extends MDB2_Result
                 $colnum = count($row);
             }
             if ($colnum < 2) {
-                return $this->db->raiseError(MDB2_ERROR_TRUNCATED, null, null,
+                return $this->db->customRaiseError(MDB2_ERROR_TRUNCATED, null, null,
                     'rekey feature requires atleast 2 column', __FUNCTION__);
             }
             $shift_array = (!$force_array && $colnum == 2);
@@ -3682,7 +3682,7 @@ class MDB2_Result_Common extends MDB2_Result
      */
     function numRows()
     {
-        return $this->db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+        return $this->db->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
             'method not implemented', __FUNCTION__);
     }
 
@@ -3701,7 +3701,7 @@ class MDB2_Result_Common extends MDB2_Result
 
     function nextResult()
     {
-        return $this->db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+        return $this->db->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
             'method not implemented', __FUNCTION__);
     }
 
@@ -3751,7 +3751,7 @@ class MDB2_Result_Common extends MDB2_Result
      */
     function _getColumnNames()
     {
-        return $this->db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+        return $this->db->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
             'method not implemented', __FUNCTION__);
     }
 
@@ -3768,7 +3768,7 @@ class MDB2_Result_Common extends MDB2_Result
      */
     function numCols()
     {
-        return $this->db->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+        return $this->db->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
             'method not implemented', __FUNCTION__);
     }
 
@@ -3957,7 +3957,7 @@ class MDB2_Statement_Common
             $parameter = preg_replace('/^:(.*)$/', '\\1', $parameter);
         }
         if (!in_array($parameter, $this->positions)) {
-            return $this->db->raiseError(MDB2_ERROR_NOT_FOUND, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR_NOT_FOUND, null, null,
                 'Unable to bind to missing placeholder: '.$parameter, __FUNCTION__);
         }
         $this->values[$parameter] = $value;
@@ -4018,7 +4018,7 @@ class MDB2_Statement_Common
             $parameter = preg_replace('/^:(.*)$/', '\\1', $parameter);
         }
         if (!in_array($parameter, $this->positions)) {
-            return $this->db->raiseError(MDB2_ERROR_NOT_FOUND, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR_NOT_FOUND, null, null,
                 'Unable to bind to missing placeholder: '.$parameter, __FUNCTION__);
         }
         $this->values[$parameter] =& $value;
@@ -4076,7 +4076,7 @@ class MDB2_Statement_Common
     function execute($values = null, $result_class = true, $result_wrap_class = false)
     {
         if (is_null($this->positions)) {
-            return $this->db->raiseError(MDB2_ERROR, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR, null, null,
                 'Prepared statement has already been freed', __FUNCTION__);
         }
 
@@ -4108,7 +4108,7 @@ class MDB2_Statement_Common
         $last_position = 0;
         foreach ($this->positions as $current_position => $parameter) {
             if (!array_key_exists($parameter, $this->values)) {
-                return $this->db->raiseError(MDB2_ERROR_NOT_FOUND, null, null,
+                return $this->db->customRaiseError(MDB2_ERROR_NOT_FOUND, null, null,
                     'Unable to bind to missing placeholder: '.$parameter, __FUNCTION__);
             }
             $value = $this->values[$parameter];
@@ -4150,7 +4150,7 @@ class MDB2_Statement_Common
     function free()
     {
         if (is_null($this->positions)) {
-            return $this->db->raiseError(MDB2_ERROR, null, null,
+            return $this->db->customRaiseError(MDB2_ERROR, null, null,
                 'Prepared statement has already been freed', __FUNCTION__);
         }
 
