@@ -201,6 +201,9 @@
             if (in_array($name, array('__get', '__isset', $name == '__unset'))) {
                 return "function {$name}(\$key)";
             }
+        	if (! is_callable(array($this->_interface, $name))) {
+        		return "function $name()";
+        	}
             return $this->_getFullSignature($name);
         }
 
