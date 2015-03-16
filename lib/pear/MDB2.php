@@ -540,7 +540,7 @@ class MDB2
     }
 
     // }}}
-    // {{{ function raiseError($code = null, $mode = null, $options = null, $userinfo = null)
+    // {{{ function customRaiseError($code = null, $mode = null, $options = null, $userinfo = null)
 
     /**
      * This method is used to communicate an error and invoke error
@@ -568,7 +568,7 @@ class MDB2
      * @access  private
      * @see     PEAR_Error
      */
-    function raiseError($code = null, $mode = null, $options = null, $userinfo = null)
+    function customRaiseError($code = null, $mode = null, $options = null, $userinfo = null)
     {
         $err =& PEAR::raiseError(null, $code, $mode, $options, $userinfo, 'MDB2_Error', true);
         return $err;
