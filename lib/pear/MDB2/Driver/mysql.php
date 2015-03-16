@@ -214,11 +214,11 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         $this->debug('Starting transaction/savepoint', __FUNCTION__, array('is_manip' => true, 'savepoint' => $savepoint));
         if (!is_null($savepoint)) {
             if (!$this->supports('savepoints')) {
-                return $this->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                return $this->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
                     'savepoints are not supported', __FUNCTION__);
             }
             if (!$this->in_transaction) {
-                return $this->raiseError(MDB2_ERROR_INVALID, null, null,
+                return $this->customRaiseError(MDB2_ERROR_INVALID, null, null,
                     'savepoint cannot be released when changes are auto committed', __FUNCTION__);
             }
             $query = 'SAVEPOINT '.$savepoint;
@@ -257,12 +257,12 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
     {
         $this->debug('Committing transaction/savepoint', __FUNCTION__, array('is_manip' => true, 'savepoint' => $savepoint));
         if (!$this->in_transaction) {
-            return $this->raiseError(MDB2_ERROR_INVALID, null, null,
+            return $this->customRaiseError(MDB2_ERROR_INVALID, null, null,
                 'commit/release savepoint cannot be done changes are auto committed', __FUNCTION__);
         }
         if (!is_null($savepoint)) {
             if (!$this->supports('savepoints')) {
-                return $this->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                return $this->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
                     'savepoints are not supported', __FUNCTION__);
             }
             $server_info = $this->getServerVersion();
@@ -274,7 +274,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         }
 
         if (!$this->supports('transactions')) {
-            return $this->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+            return $this->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
                 'transactions are not supported', __FUNCTION__);
         }
 
@@ -311,12 +311,12 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
     {
         $this->debug('Rolling back transaction/savepoint', __FUNCTION__, array('is_manip' => true, 'savepoint' => $savepoint));
         if (!$this->in_transaction) {
-            return $this->raiseError(MDB2_ERROR_INVALID, null, null,
+            return $this->customRaiseError(MDB2_ERROR_INVALID, null, null,
                 'rollback cannot be done changes are auto committed', __FUNCTION__);
         }
         if (!is_null($savepoint)) {
             if (!$this->supports('savepoints')) {
-                return $this->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+                return $this->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
                     'savepoints are not supported', __FUNCTION__);
             }
             $query = 'ROLLBACK TO SAVEPOINT '.$savepoint;
@@ -359,7 +359,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
     {
         $this->debug('Setting transaction isolation level', __FUNCTION__, array('is_manip' => true));
         if (!$this->supports('transactions')) {
-            return $this->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+            return $this->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
                 'transactions are not supported', __FUNCTION__);
         }
         switch ($isolation) {
@@ -369,7 +369,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         case 'SERIALIZABLE':
             break;
         default:
-            return $this->raiseError(MDB2_ERROR_UNSUPPORTED, null, null,
+            return $this->customRaiseError(MDB2_ERROR_UNSUPPORTED, null, null,
                 'isolation level is not supported: '.$isolation, __FUNCTION__);
         }
 
@@ -398,7 +398,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         }
 
         if (!PEAR::loadExtension($this->phptype)) {
-            return $this->raiseError(MDB2_ERROR_NOT_FOUND, null, null,
+            return $this->customRaiseError(MDB2_ERROR_NOT_FOUND, null, null,
                 'extension '.$this->phptype.' is not compiled into PHP', __FUNCTION__);
         }
 
@@ -432,10 +432,10 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         $connection = @call_user_func_array($connect_function, $params);
         if (!$connection) {
             if (($err = @mysql_error()) != '') {
-                return $this->raiseError(MDB2_ERROR_CONNECT_FAILED, null, null,
+                return $this->customRaiseError(MDB2_ERROR_CONNECT_FAILED, null, null,
                     $err, __FUNCTION__);
             } else {
-                return $this->raiseError(MDB2_ERROR_CONNECT_FAILED, null, null,
+                return $this->customRaiseError(MDB2_ERROR_CONNECT_FAILED, null, null,
                     'unable to establish a connection', __FUNCTION__);
             }
         }
@@ -456,7 +456,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         if ($this->database_name) {
             if ($this->database_name != $this->connected_database_name) {
                 if (!@mysql_select_db($this->database_name, $connection)) {
-                    $err = $this->raiseError(null, null, null,
+                    $err = $this->customRaiseError(null, null, null,
                         'Could not select the database: '.$this->database_name, __FUNCTION__);
                     return $err;
                 }
@@ -525,7 +525,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
     {
         $aVar = $this->queryAll('SHOW VARIABLES LIKE "lower_case_table_names"');
         if (!$aVar) {
-            return $this->raiseError(null, null, null,
+            return $this->customRaiseError(null, null, null,
                 'Unable to get mysql variable info');
         }
         $result = ( $aVar[0]['value'] == 0 ? MDB2_OK : false );
@@ -555,7 +555,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         $query = "SET character_set_client = '".mysql_real_escape_string($charset, $connection)."'";
         $result = @mysql_query($query, $connection);
         if (!$result) {
-            return $this->raiseError(null, null, null,
+            return $this->customRaiseError(null, null, null,
                 'Unable to set client charset: '.$charset, __FUNCTION__);
         }
 
@@ -637,7 +637,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
         if ($database_name) {
             if ($database_name != $this->connected_database_name) {
                 if (!@mysql_select_db($database_name, $connection)) {
-                    $err = $this->raiseError(null, null, null,
+                    $err = $this->customRaiseError(null, null, null,
                         'Could not select the database: '.$database_name, __FUNCTION__);
                     return $err;
                 }
@@ -649,7 +649,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
             ? 'mysql_query' : 'mysql_unbuffered_query';
         $result = @$function($query, $connection);
         if (!$result) {
-            $err =& $this->raiseError(null, null, null,
+            $err =& $this->customRaiseError(null, null, null,
                 'Could not execute statement', __FUNCTION__);
             return $err;
         }
@@ -741,7 +741,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
             $server_info = @mysql_get_server_info($connection);
         }
         if (!$server_info) {
-            return $this->raiseError(null, null, null,
+            return $this->customRaiseError(null, null, null,
                 'Could not get server information', __FUNCTION__);
         }
         // cache server_info
@@ -846,7 +846,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
                 if ($placeholder_type == ':') {
                     $parameter = preg_replace('/^.{'.($position+1).'}([a-z0-9_]+).*$/si', '\\1', $query);
                     if ($parameter === '') {
-                        $err =& $this->raiseError(MDB2_ERROR_SYNTAX, null, null,
+                        $err =& $this->customRaiseError(MDB2_ERROR_SYNTAX, null, null,
                             'named parameter with an empty name', __FUNCTION__);
                         return $err;
                     }
@@ -965,14 +965,14 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
             $values.= $value;
             if (isset($fields[$name]['key']) && $fields[$name]['key']) {
                 if ($value === 'NULL') {
-                    return $this->raiseError(MDB2_ERROR_CANNOT_REPLACE, null, null,
+                    return $this->customRaiseError(MDB2_ERROR_CANNOT_REPLACE, null, null,
                         'key value '.$name.' may not be NULL', __FUNCTION__);
                 }
                 $keys++;
             }
         }
         if ($keys == 0) {
-            return $this->raiseError(MDB2_ERROR_CANNOT_REPLACE, null, null,
+            return $this->customRaiseError(MDB2_ERROR_CANNOT_REPLACE, null, null,
                 'not specified which fields are keys', __FUNCTION__);
         }
 
@@ -1016,7 +1016,7 @@ class MDB2_Driver_mysql extends MDB2_Driver_Common
                 $this->loadModule('Manager', null, true);
                 $result = $this->manager->createSequence($seq_name);
                 if (PEAR::isError($result)) {
-                    return $this->raiseError($result, null, null,
+                    return $this->customRaiseError($result, null, null,
                         'on demand sequence '.$seq_name.' could not be created', __FUNCTION__);
                 } else {
                     return $this->nextID($seq_name, false);

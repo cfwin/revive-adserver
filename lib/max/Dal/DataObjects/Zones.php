@@ -129,16 +129,6 @@ class DataObjects_Zones extends DB_DataObjectCommon
     	return parent::delete($useWhere, $cascadeDelete, $parentid);
     }
 
-    function update()
-    {
-        return parent::update();
-    }
-
-    function insert()
-    {
-        return parent::insert();
-    }
-
     function duplicate()
     {
         // Get unique name
